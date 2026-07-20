@@ -16,7 +16,19 @@ class UserSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
 
-class TeacherSerializer(UserSerializer):
+class TeacherCreateSerializer(UserSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'username',
+            'email',
+            'password',
+            'first_name',
+            'last_name',
+            'avatar',
+        )
+
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         user.role = 'teacher'
