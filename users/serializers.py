@@ -36,9 +36,41 @@ class TeacherCreateSerializer(UserSerializer):
         return user
 
 
-class StudentSerializer(UserSerializer):
+class StudentCreateSerializer(UserSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'username',
+            'email',
+            'password',
+            'first_name',
+            'last_name',
+            'avatar',
+        )
+
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         user.role = 'student'
+        user.save()
+        return user
+
+
+class AdminCreateSerializer(UserSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'id',
+            'username',
+            'email',
+            'password',
+            'first_name',
+            'last_name',
+            'avatar',
+        )
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        user.role = 'admin'
         user.save()
         return user
