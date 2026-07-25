@@ -1,28 +1,55 @@
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import permissions
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
 
-from users import permissions
 from users.permissions import IsAdminUser, IsTeacherUser, IsStudentUser
 
 from .serializers import *
 from .models import *
 
 class GroupListCreateAPIView(ListCreateAPIView):
-    permission_classes = [IsAdminUser]
 
     def get_queryset(self):
         user = self.request.user
         if user.role == 'admin':
             return Group.objects.all()
         elif user.role == 'teacher':
-            return user.group_set.all()
+            return user.teacher_groups.all()
         elif user.role =='student':
-            return Group.objects.filter(students=user)
+            return user.student_groups.all()
         return None
 
 
     def get_serializer_class(self):
-        if self.request.method in permissions.SAFE_METHODS:
+        if self.request.method in SAFE_METHODS:
             return GroupSafeSerializer
         return GroupSerializer
+
+    def get_permissions(self):
+        if self.request.method in SAFE_METHODS:
+            return [IsAuthenticated()]
+        return [IsAdminUser()]
+
+
+class GroupRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'admin':
+            return Group.objects.all()
+        elif user.role == 'teacher':
+            return user.teacher_groups.all()
+        elif user.role =='student':
+            return user.student_groups.all()
+        return None
+
+
+    def get_serializer_class(self):
+        if self.request.method in SAFE_METHODS:
+            return GroupSafeSerializer
+        return GroupSerializer
+
+    def get_permissions(self):
+        if self.request.method in SAFE_METHODS:
+            return [IsAuthenticated()]
+        return [IsAdminUser()]
 

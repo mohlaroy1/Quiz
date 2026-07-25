@@ -5,8 +5,8 @@ User = get_user_model()
 
 class Group(models.Model):
     name = models.CharField(max_length=100)
-    students = models.ManyToManyField(User,related_name="student_groups")
-    teacher = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,related_name="teaching_groups")
+    students = models.ManyToManyField(User, related_name='student_groups')
+    teacher = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,related_name="teacher_groups")
 
     def __str__(self):
         return self.name
