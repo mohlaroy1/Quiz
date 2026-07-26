@@ -4,6 +4,8 @@ from .serializers import *
 from .models import *
 from .permissions import *
 
+from django_filters.rest_framework import DjangoFilterBackend
+
 class TeacherListCreateAPIView(ListCreateAPIView):
     permission_classes = [IsAdminUser]
 
@@ -27,6 +29,8 @@ class TeacherRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 
 class StudentListCreateAPIView(ListCreateAPIView):
     permission_classes = [IsAdminUser]
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('groups',)
 
     def get_queryset(self):
         return User.objects.filter(role='student')
