@@ -13,14 +13,25 @@ from .models import *
 class GroupListCreateAPIView(ListCreateAPIView):
 
     def get_queryset(self):
+        # Prevent Swagger from executing this method
+        if getattr(self, 'swagger_fake_view', False):
+            return Group.objects.none()
+
         user = self.request.user
+
+        if not user.is_authenticated:
+            return Group.objects.none()
+
         if user.role == 'admin':
             return Group.objects.all()
+
         elif user.role == 'teacher':
-            return user.teacher_groups.all()
-        elif user.role =='student':
+            return user.teaching_groups.all()
+
+        elif user.role == 'student':
             return user.student_groups.all()
-        return None
+
+        return Group.objects.none()
 
 
     def get_serializer_class(self):
@@ -36,14 +47,25 @@ class GroupListCreateAPIView(ListCreateAPIView):
 
 class GroupRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
+        # Prevent Swagger from executing this method
+        if getattr(self, 'swagger_fake_view', False):
+            return Group.objects.none()
+
         user = self.request.user
+
+        if not user.is_authenticated:
+            return Group.objects.none()
+
         if user.role == 'admin':
             return Group.objects.all()
+
         elif user.role == 'teacher':
-            return user.teacher_groups.all()
-        elif user.role =='student':
+            return user.teaching_groups.all()
+
+        elif user.role == 'student':
             return user.student_groups.all()
-        return None
+
+        return Group.objects.none()
 
 
     def get_serializer_class(self):
