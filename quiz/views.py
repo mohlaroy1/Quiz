@@ -79,4 +79,24 @@ class GroupRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
         return [IsAdminUser()]
 
 
+class QuizListCreateAPIView(ListCreateAPIView):
+    permission_classes = [IsAuthenticated,]
+    queryset = Quiz.objects.all()
+    serializer_class = QuizSerializer
+
+    def get_permissions(self):
+        if self.request.method in SAFE_METHODS:
+            return [IsAuthenticated()]
+        return [IsTeacherUser()]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'student':
+            groups = user.student_groups.all()
+            return Quiz.objects.filter(allowed_groups__in=groups).distinct()
+        elif user.role == 'teacher':
+            return Quiz.objects.filter(teacher=user)
+        elif user.role == 'admin':
+            return self.queryset
+        return Quiz.objects.none()
 

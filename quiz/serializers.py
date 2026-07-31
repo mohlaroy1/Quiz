@@ -16,3 +16,9 @@ class GroupSafeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = '__all__'
+
+
+class QuizSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Quiz
+        fields = '__all__'
