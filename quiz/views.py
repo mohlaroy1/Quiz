@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from users.permissions import IsAdminUser, IsTeacherUser, IsStudentUser
+from users.permissions import IsAdminUser, IsTeacherUser, IsStudentUser, IsTeacherOrAdmin
 
 from .serializers import *
 from .models import *
@@ -100,3 +100,17 @@ class QuizListCreateAPIView(ListCreateAPIView):
             return self.queryset
         return Quiz.objects.none()
 
+
+class QuizRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated,]
+    queryset = Quiz.objects.all()
+    serializer_class = QuizSerializer
+
+    def get_permissions(self):
+        if self.request.method in SAFE_METHODS:
+            return [IsAuthenticated()]
+        elif self.request.method in ['PUT', 'PATCH']:
+            return [IsTeacherUser()]
+        elif self.request.method in ['DELETE']:
+            return [IsTeacherOrAdmin()]
+        return [IsAdminUser()]
