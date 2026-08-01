@@ -22,3 +22,23 @@ class QuizSerializer(serializers.ModelSerializer):
     class Meta:
         model = Quiz
         fields = '__all__'
+
+
+class QuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Question
+        fields = '__all__'
+
+class AnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Answer
+        fields = '__all__'
+
+
+class QuestionSafeSerializer(serializers.ModelSerializer):
+    quiz = QuizSerializer(read_only=True)
+    answers = AnswerSerializer(many=True, read_only=True)
+    class Meta:
+        model = Question
+        fields = ( 'id', 'text', 'image', 'quiz', 'answers')
+
