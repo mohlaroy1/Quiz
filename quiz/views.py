@@ -1,6 +1,6 @@
 from rest_framework import permissions
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView, RetrieveUpdateDestroyAPIView, \
-    get_object_or_404
+    get_object_or_404, CreateAPIView
 from rest_framework.permissions import IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -137,4 +137,15 @@ class QuestionListCreateAPIView(ListCreateAPIView):
         if user.role == 'student':
             groups = user.student_groups.all()
             quizzes = Quiz.objects.filter(allowed_groups__in=groups).distinct()
-            
+            return Question.objects.filter(quiz__in=quizzes).distinct()
+        elif user.role == 'teacher':
+            return Question.objects.filter(quiz__teacher=user)
+        elif user.role == 'admin':
+            return self.queryset
+        return Question.objects.none()
+
+    def get_serializer_class(self):
+        if self.request.method in SAFE_METHODS:
+            return QuestionSafeSerializer
+        return QuestionSerializer
+
