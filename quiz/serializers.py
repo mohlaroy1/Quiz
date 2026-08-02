@@ -42,3 +42,24 @@ class QuestionSafeSerializer(serializers.ModelSerializer):
         model = Question
         fields = ( 'id', 'text', 'image', 'quiz', 'answers')
 
+
+class AnswerCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Answer
+        fields = ('id', 'text', 'image', 'is_correct')
+        read_only_fields = ('id')
+
+
+class QuestionCreateSerializer(serializers.ModelSerializer):
+    answers = AnswerCreateSerializer(many=True)
+    class Meta:
+        model = Question
+        fields = ('id', 'text', 'image', 'quiz', 'answers')
+
+        def create(self, validated_data):
+            answers = validated_data.pop('answers')
+            question = Question.objects.create(**validated_data)
+
+            for answer in answers:
+                Answer.objects.create(question=question, **answer)
+
