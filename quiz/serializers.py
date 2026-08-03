@@ -63,3 +63,5 @@ class QuestionCreateSerializer(serializers.ModelSerializer):
             for answer in answers:
                 Answer.objects.create(question=question, **answer)
 
+            return question
+

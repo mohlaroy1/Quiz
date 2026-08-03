@@ -8,5 +8,6 @@ urlpatterns = [
     path('groups/<int:pk>/', GroupRetrieveUpdateDestroyAPIView.as_view()),
     path('quizzes/', QuizListCreateAPIView.as_view()),
     path('quizzes/<int:pk>/', QuizRetrieveUpdateDestroyAPIView.as_view()),
+    path('quizzes/<int:pk>/add-question/', QuizAddQuestionAPIView.as_view()),
     path('questions/', QuestionListCreateAPIView.as_view()),
 ]

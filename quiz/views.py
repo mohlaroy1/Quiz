@@ -100,6 +100,9 @@ class QuizListCreateAPIView(ListCreateAPIView):
             return self.queryset
         return Quiz.objects.none()
 
+    def perform_create(self, serializer):
+        serializer.save(teacher=self.request.user)
+
 
 class QuizRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated,]
@@ -125,6 +128,15 @@ class QuizRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
         elif user.role == 'admin':
             return self.queryset
         return Quiz.objects.none()
+
+
+class QuizAddQuestionAPIView(CreateAPIView):
+    permission_classes = [IsTeacherUser,]
+    serializer_class = QuestionCreateSerializer
+
+    def get_queryset(self):
+        return Question.objects.filter(quiz__teacher=self.request.user)
+
 
 
 class QuestionListCreateAPIView(ListCreateAPIView):
